@@ -36,9 +36,10 @@ async function fetchData(devices: Device[]) {
   const newData = await Promise.all(
     devices?.map(async (device) => {
       const reports = await getReports(device);
-      return { ...device, reports: reports.reports };
+      return { ...device, reports: await reports.reports };
     })
   );
+  console.log(newData);
   saveDevices(newData as Device[]);
 }
 
@@ -107,7 +108,7 @@ const Devices: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Devices</IonTitle>
+          <IonTitle size="large">Devices</IonTitle>
           <IonButtons slot="end">
             <IonButton onClick={onAddDevice}>
               <IonIcon slot="icon-only" icon={add}></IonIcon>
@@ -119,12 +120,6 @@ const Devices: React.FC = () => {
         <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
           <IonRefresherContent></IonRefresherContent>
         </IonRefresher>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Devices</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-
         <IonList>
           {devices?.map((device, index) => (
             <IonItemSliding key={index}>

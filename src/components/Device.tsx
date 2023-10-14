@@ -1,4 +1,4 @@
-import { thermometer, water, planet, pin } from 'ionicons/icons';
+import { thermometer, water, pin, invertMode } from 'ionicons/icons';
 
 
 export interface Device {
@@ -15,8 +15,8 @@ export function stringToIcon(icon: string) {
             return water;
         case 'pin':
             return pin;
-        case 'planet':
-            return planet;
+        case 'invert-mode-outline':
+            return invertMode;
         default:
             return icon.indexOf("http") === 0 ? icon : pin;
     }

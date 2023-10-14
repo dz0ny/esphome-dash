@@ -27,6 +27,7 @@ export async function getReports(device: Device): Promise<ResponseReport> {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
+        , method: 'GET', mode: 'cors'
     })
     if (!report.ok) {
         return { reports: [], status: false };

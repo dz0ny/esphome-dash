@@ -6,15 +6,10 @@ const Settings: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Options</IonTitle>
+          <IonTitle size="large">Options</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Options</IonTitle>
-          </IonToolbar>
-        </IonHeader>
+      <IonContent>
         <ExploreContainer name="Options page" />
       </IonContent>
     </IonPage>
