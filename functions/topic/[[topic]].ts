@@ -17,7 +17,8 @@ export const onRequest: PagesFunction<Env> = async (context) => {
             status: true,
             updatedAt: new Date().toISOString(),
         });
-        context.env.KV.put(topic, requestBody);
+        await context.env.KV.put(topic, requestBody);
+        console.log(`Updated topic ${topic}`, requestBody);
         return new Response("OK");
     }
     if (context.request.method === 'GET') {

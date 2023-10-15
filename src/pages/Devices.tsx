@@ -25,13 +25,14 @@ import {
   RefresherEventDetail,
   IonCardSubtitle,
 } from '@ionic/react';
-import { add, heart } from 'ionicons/icons';
+import { add } from 'ionicons/icons';
 
-import { useInterval } from 'usehooks-ts'
+import { useInterval, useIsFirstRender } from 'usehooks-ts'
 import { Device } from '../components/Device';
 import { saveDevices, getDevices, getReports } from '../components/Shared';
 import './Devices.css';
 import RenderReport from '../components/RenderReport';
+import Pulse from '../components/Pulse';
 
 async function fetchData(devices: Device[]) {
   const newData = await Promise.all(
@@ -40,7 +41,7 @@ async function fetchData(devices: Device[]) {
       return { ...device, reports: await reports.reports, updatedAt: reports.updatedAt, status: reports.status };
     })
   );
-  saveDevices(newData as Device[]);
+  saveDevices(await newData as Device[]);
 }
 
 function timeAgo(date: string) {
@@ -72,6 +73,8 @@ const Devices: React.FC = () => {
   const [devices, setDevices] = useState<Device[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const firstTime = useIsFirstRender();
+
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
   const [newDevice, setNewDevice] = useState<Device>({
     label: '',
@@ -81,8 +84,8 @@ const Devices: React.FC = () => {
   });
 
   useInterval(
-    async () => {
-      await fetchData(devices);
+    () => {
+      fetchData(devices);
     },
     60000
   );
@@ -127,7 +130,13 @@ const Devices: React.FC = () => {
   }
 
   useEffect(() => {
-    getDevices().then((devices) => setDevices(devices));
+    getDevices().then((devices) => {
+      setDevices(devices);
+      if (firstTime) {
+        console.log("First time");
+        fetchData(devices);
+      }
+    });
   });
 
   return (
@@ -152,14 +161,14 @@ const Devices: React.FC = () => {
               <IonItem>
                 <IonCard style={{ "width": "100%" }}>
                   <IonCardHeader>
-                   
-                      <IonCardTitle>
-                        
-                        {device.label}<IonIcon style={{float: "right"}} icon={heart} color="danger"></IonIcon>
-                        </IonCardTitle>
-                      <IonCardSubtitle>Updated {timeAgo(device.updatedAt)} ago</IonCardSubtitle>
-                      
-        
+
+                    <IonCardTitle>
+
+                      {device.label}<Pulse></Pulse>
+                    </IonCardTitle>
+                    <IonCardSubtitle>Updated {timeAgo(device.updatedAt)} ago</IonCardSubtitle>
+
+
 
                   </IonCardHeader>
                   <IonCardContent>
