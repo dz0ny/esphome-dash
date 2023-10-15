@@ -32,13 +32,21 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import { useDarkMode } from 'usehooks-ts';
+import { useEffect } from 'react';
 
 setupIonicReact({
   mode: 'md',
 });
 
-const App: React.FC = () => (
-  <IonApp>
+const App: React.FC = () => {
+  const { isDarkMode, toggle, enable, disable } = useDarkMode()
+
+  useEffect(() => {
+    document.body.classList.toggle('dark', isDarkMode);
+  });
+
+  return (<IonApp>
     <IonReactRouter>
       <IonTabs>
         <IonRouterOutlet>
@@ -64,7 +72,8 @@ const App: React.FC = () => (
         </IonTabBar>
       </IonTabs>
     </IonReactRouter>
-  </IonApp>
-);
+  </IonApp>);
+};
 
 export default App;
+
