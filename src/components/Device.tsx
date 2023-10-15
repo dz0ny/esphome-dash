@@ -5,6 +5,7 @@ export interface Device {
     label: string;
     address: string;
     reports: Array<Report>;
+    updatedAt: string;
 }
 
 export function stringToIcon(icon: string) {
@@ -31,4 +32,5 @@ export interface Report {
 export interface ResponseReport {
     reports: Array<Report>;
     status: Boolean;
+    updatedAt: string;
 }

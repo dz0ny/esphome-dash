@@ -23,6 +23,7 @@ import {
   IonRefresher,
   IonRefresherContent,
   RefresherEventDetail,
+  IonCardSubtitle,
 } from '@ionic/react';
 import { add, heart } from 'ionicons/icons';
 
@@ -36,11 +37,35 @@ async function fetchData(devices: Device[]) {
   const newData = await Promise.all(
     devices?.map(async (device) => {
       const reports = await getReports(device);
-      return { ...device, reports: await reports.reports };
+      return { ...device, reports: await reports.reports, updatedAt: reports.updatedAt, status: reports.status };
     })
   );
-  console.log(newData);
   saveDevices(newData as Device[]);
+}
+
+function timeAgo(date: string) {
+  const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
+  let interval = seconds / 31536000;
+  if (interval > 1) {
+    return Math.floor(interval) + " years";
+  }
+  interval = seconds / 2592000;
+  if (interval > 1) {
+    return Math.floor(interval) + " months";
+  }
+  interval = seconds / 86400;
+  if (interval > 1) {
+    return Math.floor(interval) + " days";
+  }
+  interval = seconds / 3600;
+  if (interval > 1) {
+    return Math.floor(interval) + " hours";
+  }
+  interval = seconds / 60;
+  if (interval > 1) {
+    return Math.floor(interval) + " minutes";
+  }
+  return Math.floor(seconds) + " seconds";
 }
 
 const Devices: React.FC = () => {
@@ -52,6 +77,7 @@ const Devices: React.FC = () => {
     label: '',
     address: '',
     reports: [],
+    updatedAt: new Date().toISOString(),
   });
 
   useInterval(
@@ -69,13 +95,13 @@ const Devices: React.FC = () => {
     const newDevices = [...devices, newDevice];
     saveDevices(newDevices);
     setShowModal(false);
-    setNewDevice({ label: '', address: '', reports: [] });
+    setNewDevice({ label: '', address: '', reports: [], updatedAt: new Date().toISOString() });
     fetchData(newDevices);
   };
 
   const onCancelDevice = () => {
     setShowModal(false);
-    setNewDevice({ label: '', address: '', reports: [] });
+    setNewDevice({ label: '', address: '', reports: [], updatedAt: new Date().toISOString() });
   };
 
   const onDeleteDevice = (device: Device) => {
@@ -126,10 +152,14 @@ const Devices: React.FC = () => {
               <IonItem>
                 <IonCard style={{ "width": "100%" }}>
                   <IonCardHeader>
-                    <IonItem>
-                      <IonCardTitle>{device.label}</IonCardTitle>
-                      <IonIcon slot="end" icon={heart} color="danger"></IonIcon>
-                    </IonItem>
+                   
+                      <IonCardTitle>
+                        
+                        {device.label}<IonIcon style={{float: "right"}} icon={heart} color="danger"></IonIcon>
+                        </IonCardTitle>
+                      <IonCardSubtitle>Updated {timeAgo(device.updatedAt)} ago</IonCardSubtitle>
+                      
+        
 
                   </IonCardHeader>
                   <IonCardContent>

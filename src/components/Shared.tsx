@@ -30,7 +30,7 @@ export async function getReports(device: Device): Promise<ResponseReport> {
         , method: 'GET', mode: 'cors'
     })
     if (!report.ok) {
-        return { reports: [], status: false };
+        return { reports: [], status: false, updatedAt: new Date().toISOString() };
     }
-    return { reports: report.json() as unknown as Array<Report> || [], status: false };
+    return  report.json() as unknown as ResponseReport;
 }

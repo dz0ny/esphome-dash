@@ -7,11 +7,16 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     if (topic === undefined) {
         return new Response('Topic not specified', { status: 400 });
     }
-    if (topic.search(/[^a-zA-Z0-9.-]/) !== -1) {
-        return new Response('Invalid topic name', { status: 400 });
+    if (topic.length > 256) {
+        return new Response('Topic too long', { status: 400 });
     }
     if (context.request.method === 'POST') {
-        const requestBody = await context.request.text();
+        const reports = await context.request.json();
+        const requestBody = JSON.stringify({
+            reports,
+            status: true,
+            updatedAt: new Date().toISOString(),
+        });
         context.env.KV.put(topic, requestBody);
         return new Response("OK");
     }
