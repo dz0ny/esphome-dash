@@ -34,6 +34,7 @@ import './Devices.css';
 import RenderReport from '../components/RenderReport';
 import Pulse from '../components/Pulse';
 import { usePageVisibility } from '../components/usePageVisibility';
+import ReactTimeAgo from 'react-time-ago';
 
 async function fetchData(devices: Device[]) {
   const newData = await Promise.all(
@@ -43,31 +44,6 @@ async function fetchData(devices: Device[]) {
     })
   );
   saveDevices(await newData as Device[]);
-}
-
-function timeAgo(date: string) {
-  const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
-  let interval = seconds / 31536000;
-  if (interval > 1) {
-    return Math.floor(interval) + " years";
-  }
-  interval = seconds / 2592000;
-  if (interval > 1) {
-    return Math.floor(interval) + " months";
-  }
-  interval = seconds / 86400;
-  if (interval > 1) {
-    return Math.floor(interval) + " days";
-  }
-  interval = seconds / 3600;
-  if (interval > 1) {
-    return Math.floor(interval) + " hours";
-  }
-  interval = seconds / 60;
-  if (interval > 1) {
-    return Math.floor(interval) + " minutes";
-  }
-  return Math.floor(seconds) + " seconds";
 }
 
 const Devices: React.FC = () => {
@@ -170,7 +146,7 @@ const Devices: React.FC = () => {
 
                       {device.label}<Pulse></Pulse>
                     </IonCardTitle>
-                    <IonCardSubtitle>Updated {timeAgo(device.updatedAt)} ago</IonCardSubtitle>
+                    <IonCardSubtitle>Updated <ReactTimeAgo date={new Date(device.updatedAt)} timeStyle="twitter" /> ago</IonCardSubtitle>
 
 
 
