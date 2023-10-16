@@ -33,6 +33,7 @@ import { saveDevices, getDevices, getReports } from '../components/Shared';
 import './Devices.css';
 import RenderReport from '../components/RenderReport';
 import Pulse from '../components/Pulse';
+import { usePageVisibility } from '../components/usePageVisibility';
 
 async function fetchData(devices: Device[]) {
   const newData = await Promise.all(
@@ -73,8 +74,9 @@ const Devices: React.FC = () => {
   const [devices, setDevices] = useState<Device[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [delay, setDelay] = useState(60000); // 1 minute
   const firstTime = useIsFirstRender();
-
+  const isPageVisible = usePageVisibility();
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
   const [newDevice, setNewDevice] = useState<Device>({
     label: '',
@@ -85,9 +87,11 @@ const Devices: React.FC = () => {
 
   useInterval(
     () => {
-      fetchData(devices);
+      if (isPageVisible) {
+        fetchData(devices);
+      }
     },
-    60000
+    delay
   );
 
   const onAddDevice = () => {
