@@ -20,10 +20,19 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         });
         await context.env.KV.put(topic, requestBody);
         console.log(`Updated topic ${topic}`, requestBody);
-        const ts = new Date().toISOString();
+        var ts = new Date();
+        //ts.setSeconds(0);
+        //ts.setMilliseconds(0);
+        // strip out seconds and milliseconds
+        const values = JSON.stringify(reports.map((report) => {
+            return {
+                value: Number(report.value.replace(/[^0-9.]/g, '')),
+                name: report.name,
+            };
+        }));
         await context.env.DB
             .prepare('INSERT INTO podatki (ts, topic, value) VALUES (?, ?, ?)')
-            .bind(`${ts}`, `${topic}`, `${requestBody}`)
+            .bind(`${ts.toISOString()}`, `${topic}`, `${values}`)
             .run();
         return new Response("OK");
     }

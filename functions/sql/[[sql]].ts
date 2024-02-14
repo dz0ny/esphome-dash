@@ -18,7 +18,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         const data = results.map((row) => {
             return {
                 ts: row.ts,
-                value: JSON.parse(row.value).reports,
+                value: JSON.parse(row.value),
             };
         });
 
