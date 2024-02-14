@@ -5,6 +5,14 @@ interface Env {
 
 export const onRequest: PagesFunction<Env> = async (context) => {
     const topic = context.params.sql as string;
+    const url = new URL(context.request.url);
+    const from = url.searchParams.get('from');
+    const to = url.searchParams.get('to');
+
+    if (from === undefined || to === undefined) {
+        return new Response('From and to not specified', { status: 400 });
+    }
+
     if (topic === undefined) {
         return new Response('Topic not specified', { status: 400 });
     }
@@ -13,8 +21,8 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     }
     if (context.request.method === 'GET') {
         const { results } = await context.env.DB.prepare(`
-            select ts, value from podatki where topic = ? order by ts desc limit 1000;
-        `).bind(`${topic}`).all();
+            select ts, value from podatki where topic = ? and ts >= ? and ts <= ? order by ts;
+        `).bind(`${topic}`, `${from}`, `${to}`).all();
         const data = results.map((row) => {
             return {
                 ts: row.ts,
