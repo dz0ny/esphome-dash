@@ -1,5 +1,6 @@
 interface Env {
     KV: KVNamespace;
+    DB: D1Database;
 }
 
 export const onRequest: PagesFunction<Env> = async (context) => {
@@ -19,6 +20,11 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         });
         await context.env.KV.put(topic, requestBody);
         console.log(`Updated topic ${topic}`, requestBody);
+        const ts = new Date().toISOString();
+        await context.env.DB
+            .prepare('INSERT INTO podatki (ts, topic, value) VALUES (?, ?, ?)')
+            .bind(`${ts}`, `${topic}`, `${requestBody}`)
+            .run();
         return new Response("OK");
     }
     if (context.request.method === 'GET') {
