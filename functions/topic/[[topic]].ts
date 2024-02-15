@@ -25,8 +25,8 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         if (String(topic).indexOf('-') > 0) {
             //if report with same topic was already stored in db in the last 45s ignore it
             const lastReport = await context.env.DB
-                .prepare('SELECT * FROM podatki WHERE topic = ? and ts >= ? ORDER BY ts DESC LIMIT 1')
-                .bind(`${topic}`, `${new Date(new Date().getTime() - 45 * 1000).toISOString()}`)
+                .prepare('SELECT * FROM podatki WHERE topic = ? and ts >= ?')
+                .bind(`${topic}`, `${new Date(new Date().getTime() - 60 * 1000 * 5).toISOString()}`)
                 .all();
             if (lastReport.length > 0) {
                 console.log('Ignoring report');
