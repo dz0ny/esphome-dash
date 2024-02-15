@@ -22,28 +22,28 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         console.log(`Updated topic ${topic}`, requestBody);
 
         // if topic contains - also store it in db
-        if (topic.indexOf('-') !== -1) {
-            // if report with same topic was already stored in db in the last 45s ignore it
-            const lastReport = await context.env.DB
-                .prepare('SELECT * FROM podatki WHERE topic = ? and ts >= ? ORDER BY ts DESC LIMIT 1')
-                .bind(`${topic}`, `${new Date(new Date().getTime() - 45 * 1000).toISOString()}`)
-                .all();
-            if (lastReport.length > 0) {
-                console.log('Ignoring report');
-                return new Response("Ignoring report");
-            }
-            const values = JSON.stringify(reports.map((report) => {
-                return {
-                    value: Number(report.value.replace(/[^0-9.-]/g, '')),
-                    name: report.name,
-                };
-            }));
-            await context.env.DB
-                .prepare('INSERT INTO podatki (ts, topic, value) VALUES (?, ?, ?)')
-                .bind(`${new Date().toISOString()}`, `${topic}`, `${values}`)
-                .run();
-            console.log(`Inserted topic ${topic} to db`, values);
-        }
+        // if (topic.indexOf('-') !== -1) {
+        //     // if report with same topic was already stored in db in the last 45s ignore it
+        //     const lastReport = await context.env.DB
+        //         .prepare('SELECT * FROM podatki WHERE topic = ? and ts >= ? ORDER BY ts DESC LIMIT 1')
+        //         .bind(`${topic}`, `${new Date(new Date().getTime() - 45 * 1000).toISOString()}`)
+        //         .all();
+        //     if (lastReport.length > 0) {
+        //         console.log('Ignoring report');
+        //         return new Response("Ignoring report");
+        //     }
+        const values = JSON.stringify(reports.map((report) => {
+            return {
+                value: Number(report.value.replace(/[^0-9.-]/g, '')),
+                name: report.name,
+            };
+        }));
+        await context.env.DB
+            .prepare('INSERT INTO podatki (ts, topic, value) VALUES (?, ?, ?)')
+            .bind(`${new Date().toISOString()}`, `${topic}`, `${values}`)
+            .run();
+        console.log(`Inserted topic ${topic} to db`, values);
+        //}
 
         return new Response("OK");
     }
