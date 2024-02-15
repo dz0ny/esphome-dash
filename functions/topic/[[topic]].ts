@@ -12,7 +12,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         return new Response('Topic too long', { status: 400 });
     }
     if (context.request.method === 'POST') {
-        const reports = await context.request.json();
+        const reports = await context.request.json() as Array<{ name: string, value: string }>;
         const requestBody = JSON.stringify({
             reports,
             status: true,
