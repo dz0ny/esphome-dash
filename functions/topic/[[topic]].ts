@@ -28,14 +28,14 @@ export const onRequest: PagesFunction<Env> = async (context) => {
                 .prepare('SELECT * FROM podatki WHERE topic = ? and ts >= ?')
                 .bind(`${topic}`, `${new Date(new Date().getTime() - 60 * 1000 * 5).toISOString()}`)
                 .all();
-            if (lastReport.length > 0) {
+            if (Array.isArray(lastReport) && lastReport.length > 0) {
                 console.log('Ignoring report');
-                return new Response("Ignoring duplicte report");
+                return new Response("Ignoring duplicate report");
             }
 
             const values = JSON.stringify(reports.map((report) => {
                 return {
-                    value: Number(report.value.replace(/[^0-9.-]/g, '')),
+                    value: report.value,
                     name: report.name,
                 };
             }));
