@@ -50,7 +50,15 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     }
     if (context.request.method === 'GET') {
         const value = await context.env.KV.get(topic);
-        return new Response(value);
+        return new Response(value, {
+            headers: {
+                'Cache-Control': 'public, max-age=10',
+            },
+            cf: {
+                cacheTtl: 10,
+                cacheEverything: true,
+            },
+        });
     }
 
     return new Response('Method not allowed', { status: 405 });

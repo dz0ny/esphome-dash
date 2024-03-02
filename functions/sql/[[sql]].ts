@@ -26,11 +26,19 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         const data = results.map((row) => {
             return {
                 ts: row.ts,
-                value: JSON.parse(row.value),
+                value: JSON.parse(String(row.value)),
             };
         });
 
-        return Response.json(data);
+        return Response.json(data, {
+            headers: {
+                'Cache-Control': 'public, max-age=60',
+            },
+            cf: {
+                cacheTtl: 60,
+                cacheEverything: true,
+            },
+        });
     }
 
     return new Response('Method not allowed', { status: 405 });
